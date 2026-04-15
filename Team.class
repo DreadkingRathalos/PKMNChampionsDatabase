@@ -1,0 +1,12 @@
+// Source code is decompiled from a .class file using FernFlower decompiler (from Intellij IDEA).
+import java.util.ArrayList;
+import java.util.List;
+
+class Team {
+   String name;
+   List<Pokemon> members = new ArrayList();
+
+   public Team(String var1) {
+      this.name = var1;
+   }
+}
