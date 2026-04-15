@@ -1,0 +1,478 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+
+public class PokemonDB {
+   static final String POKEMON_DATA_FILE = "pokemon.txt";
+   static final String TEAM_FOLDER = "teams";
+   static final Set<String> TYPE1_ALLOWED = Set.of("normal", "fire", "water", "grass", "flying", "fighting", "poison", "electric", "ground", "rock", "psychic", "ice", "bug", "ghost", "steel", "dragon", "dark", "fairy");
+   static final Set<String> TYPE2_ALLOWED = Set.of("n/a", "normal", "fire", "water", "grass", "flying", "fighting", "poison", "electric", "ground", "rock", "psychic", "ice", "bug", "ghost", "steel", "dragon", "dark", "fairy");
+   static List<Pokemon> pokemonList = new ArrayList();
+   static List<Team> teams = new ArrayList();
+
+   public PokemonDB() {
+   }
+
+   public static void main(String[] var0) {
+      Scanner var1 = new Scanner(System.in);
+      loadPokemonData();
+      loadTeams();
+
+      while(true) {
+         System.out.println("\n1. Add Pokemon");
+         System.out.println("2. Search Pokemon");
+         System.out.println("3. Build Team");
+         System.out.println("4. List Pokemon");
+         System.out.println("5. List Teams");
+         System.out.println("6. Delete Pokemon");
+         System.out.println("7. Delete Team");
+         System.out.println("8. Exit");
+         System.out.print("Choice: ");
+         int var2 = var1.nextInt();
+         var1.nextLine();
+         switch (var2) {
+            case 1:
+               addPokemon(var1);
+               break;
+            case 2:
+               searchPokemon(var1);
+               break;
+            case 3:
+               buildTeam(var1);
+               break;
+            case 4:
+               listPokemon();
+               break;
+            case 5:
+               listTeams();
+               break;
+            case 6:
+               deletePokemon(var1);
+               break;
+            case 7:
+               deleteTeam(var1);
+               break;
+            case 8:
+               return;
+            default:
+               System.out.println("Invalid choice.");
+         }
+      }
+   }
+
+   static boolean validEVs(int var0, int var1, int var2, int var3, int var4, int var5) {
+      return var0 + var1 + var2 + var3 + var4 + var5 <= 66;
+   }
+
+   static boolean isValidType1(String var0) {
+      return var0 != null && TYPE1_ALLOWED.contains(var0.trim().toLowerCase());
+   }
+
+   static boolean isValidType2(String var0) {
+      return var0 != null && TYPE2_ALLOWED.contains(var0.trim().toLowerCase());
+   }
+
+   static void addPokemon(Scanner var0) {
+      System.out.print("Name: ");
+      String var1 = var0.nextLine().trim();
+      if (var1.isEmpty()) {
+         System.out.println("Name cannot be empty.");
+      } else {
+         for(Pokemon var3 : pokemonList) {
+            if (var3.name.equalsIgnoreCase(var1)) {
+               System.out.println("Pokemon already exists!");
+               return;
+            }
+         }
+
+         System.out.print("Ability: ");
+         String var13 = var0.nextLine().trim();
+         System.out.print("Item: ");
+         String var14 = var0.nextLine().trim();
+         System.out.print("Type1: ");
+         String var4 = var0.nextLine().trim();
+         if (!isValidType1(var4)) {
+            System.out.println("Invalid Type1. Allowed types: Normal, Fire, Water, Grass, Flying, Fighting, Poison, Electric, Ground, Rock, Psychic, Ice, Bug, Ghost, Steel, Dragon, Dark, Fairy");
+         } else {
+            System.out.print("Type2: ");
+            String var5 = var0.nextLine().trim();
+            if (!isValidType2(var5)) {
+               System.out.println("Invalid Type2. Allowed types: N/A, Normal, Fire, Water, Grass, Flying, Fighting, Poison, Electric, Ground, Rock, Psychic, Ice, Bug, Ghost, Steel, Dragon, Dark, Fairy");
+            } else {
+               System.out.print("Nature: ");
+               String var6 = var0.nextLine().trim();
+               System.out.println("Enter EVs (total <= 66)");
+               System.out.print("HP: ");
+               int var7 = var0.nextInt();
+               System.out.print("ATK: ");
+               int var8 = var0.nextInt();
+               System.out.print("DEF: ");
+               int var9 = var0.nextInt();
+               System.out.print("SPA: ");
+               int var10 = var0.nextInt();
+               System.out.print("SPD: ");
+               int var11 = var0.nextInt();
+               System.out.print("SPE: ");
+               int var12 = var0.nextInt();
+               var0.nextLine();
+               if (!validEVs(var7, var8, var9, var10, var11, var12)) {
+                  System.out.println("Invalid EV total!");
+               } else {
+                  pokemonList.add(new Pokemon(var1, var4, var5, var13, var6, var14, var7, var8, var9, var10, var11, var12));
+                  savePokemonData();
+                  System.out.println("Pokemon added and saved.");
+               }
+            }
+         }
+      }
+   }
+
+   static void searchPokemon(Scanner var0) {
+      if (pokemonList.isEmpty()) {
+         System.out.println("No Pokemon available.");
+      } else {
+         System.out.print("Search by name: ");
+         String var1 = var0.nextLine().trim();
+
+         for(Pokemon var3 : pokemonList) {
+            if (var3.name.equalsIgnoreCase(var1)) {
+               System.out.println(var3);
+               return;
+            }
+         }
+
+         System.out.println("Pokemon not found.");
+      }
+   }
+
+   static void listPokemon() {
+      if (pokemonList.isEmpty()) {
+         System.out.println("No Pokemon available.");
+      } else {
+         System.out.println("Available Pokemon:");
+
+         for(int var0 = 0; var0 < pokemonList.size(); ++var0) {
+            Pokemon var1 = (Pokemon)pokemonList.get(var0);
+            System.out.println(var0 + 1 + ". " + var1.name + " - " + var1.type1 + "/" + var1.type2);
+         }
+
+      }
+   }
+
+   static void listTeams() {
+      if (teams.isEmpty()) {
+         System.out.println("No teams available.");
+      } else {
+         System.out.println("Saved Teams:");
+
+         for(int var0 = 0; var0 < teams.size(); ++var0) {
+            Team var1 = (Team)teams.get(var0);
+            System.out.println(var0 + 1 + ". " + var1.name);
+
+            for(Pokemon var3 : var1.members) {
+               System.out.println("   - " + var3.name);
+            }
+         }
+
+      }
+   }
+
+   static void deletePokemon(Scanner var0) {
+      if (pokemonList.isEmpty()) {
+         System.out.println("No Pokemon to delete.");
+      } else {
+         listPokemon();
+         System.out.print("Select Pokemon number to delete: ");
+         int var1 = var0.nextInt();
+         var0.nextLine();
+         if (var1 >= 1 && var1 <= pokemonList.size()) {
+            Pokemon var2 = (Pokemon)pokemonList.remove(var1 - 1);
+            savePokemonData();
+            deleteTeamsWithPokemon(var2.name);
+            System.out.println("Deleted Pokemon: " + var2.name);
+         } else {
+            System.out.println("Invalid selection.");
+         }
+      }
+   }
+
+   static void deleteTeam(Scanner var0) {
+      if (teams.isEmpty()) {
+         System.out.println("No teams to delete.");
+      } else {
+         listTeams();
+         System.out.print("Select team number to delete: ");
+         int var1 = var0.nextInt();
+         var0.nextLine();
+         if (var1 >= 1 && var1 <= teams.size()) {
+            Team var2 = (Team)teams.remove(var1 - 1);
+            deleteTeamFile(var2);
+            System.out.println("Deleted team: " + var2.name);
+         } else {
+            System.out.println("Invalid selection.");
+         }
+      }
+   }
+
+   static void deleteTeamsWithPokemon(String var0) {
+      ArrayList var1 = new ArrayList();
+
+      for(Team var3 : teams) {
+         for(Pokemon var5 : var3.members) {
+            if (var5.name.equalsIgnoreCase(var0)) {
+               var1.add(var3);
+               break;
+            }
+         }
+      }
+
+      for(Team var7 : var1) {
+         teams.remove(var7);
+         deleteTeamFile(var7);
+         System.out.println("Deleted team because it contained " + var0 + ": " + var7.name);
+      }
+
+   }
+
+   static void buildTeam(Scanner var0) {
+      if (pokemonList.size() < 6) {
+         System.out.println("Need at least 6 Pokemon!");
+      } else {
+         ArrayList var1 = new ArrayList();
+
+         for(int var2 = 0; var2 < 6; ++var2) {
+            System.out.println("\nChoose Pokemon " + (var2 + 1));
+
+            for(int var3 = 0; var3 < pokemonList.size(); ++var3) {
+               System.out.println(var3 + 1 + ". " + ((Pokemon)pokemonList.get(var3)).name);
+            }
+
+            int var6 = var0.nextInt();
+            var0.nextLine();
+            if (var6 >= 1 && var6 <= pokemonList.size()) {
+               Pokemon var4 = (Pokemon)pokemonList.get(var6 - 1);
+               if (var1.contains(var4)) {
+                  System.out.println("No duplicates allowed!");
+                  --var2;
+               } else {
+                  var1.add(var4);
+               }
+            } else {
+               System.out.println("Invalid selection.");
+               --var2;
+            }
+         }
+
+         System.out.print("Team name: ");
+         String var5 = var0.nextLine().trim();
+         if (var5.isEmpty()) {
+            System.out.println("Team name cannot be empty.");
+         } else {
+            Team var7 = new Team(var5);
+            var7.members.addAll(var1);
+            teams.add(var7);
+            saveTeamToFile(var7);
+            System.out.println("Team saved!");
+         }
+      }
+   }
+
+   static void savePokemonData() {
+      try {
+         PrintWriter var0 = new PrintWriter(new FileWriter("pokemon.txt"));
+
+         try {
+            for(Pokemon var2 : pokemonList) {
+               String var10001 = escape(var2.name);
+               var0.println(var10001 + "|" + escape(var2.type1) + "|" + escape(var2.type2) + "|" + escape(var2.ability) + "|" + escape(var2.nature) + "|" + escape(var2.item) + "|" + var2.hp + "|" + var2.atk + "|" + var2.def + "|" + var2.spa + "|" + var2.spd + "|" + var2.spe);
+            }
+         } catch (Throwable var4) {
+            try {
+               var0.close();
+            } catch (Throwable var3) {
+               var4.addSuppressed(var3);
+            }
+
+            throw var4;
+         }
+
+         var0.close();
+      } catch (IOException var5) {
+         System.out.println("Error saving pokemon data.");
+      }
+
+   }
+
+   static void loadPokemonData() {
+      File var0 = new File("pokemon.txt");
+      if (var0.exists()) {
+         try {
+            BufferedReader var1 = new BufferedReader(new FileReader(var0));
+
+            String var2;
+            try {
+               while((var2 = var1.readLine()) != null) {
+                  if (!var2.isBlank()) {
+                     String[] var3 = var2.split("\\|", -1);
+                     if (var3.length == 12) {
+                        String var4 = unescape(var3[0]);
+                        String var5 = unescape(var3[1]);
+                        String var6 = unescape(var3[2]);
+                        String var7 = unescape(var3[3]);
+                        String var8 = unescape(var3[4]);
+                        String var9 = unescape(var3[5]);
+                        int var10 = Integer.parseInt(var3[6]);
+                        int var11 = Integer.parseInt(var3[7]);
+                        int var12 = Integer.parseInt(var3[8]);
+                        int var13 = Integer.parseInt(var3[9]);
+                        int var14 = Integer.parseInt(var3[10]);
+                        int var15 = Integer.parseInt(var3[11]);
+                        pokemonList.add(new Pokemon(var4, var5, var6, var7, var8, var9, var10, var11, var12, var13, var14, var15));
+                     }
+                  }
+               }
+            } catch (Throwable var17) {
+               try {
+                  var1.close();
+               } catch (Throwable var16) {
+                  var17.addSuppressed(var16);
+               }
+
+               throw var17;
+            }
+
+            var1.close();
+         } catch (IOException var18) {
+            System.out.println("Error loading pokemon data.");
+         }
+
+      }
+   }
+
+   static void loadTeams() {
+      File var0 = new File("teams");
+      if (var0.exists() && var0.isDirectory()) {
+         File[] var1 = var0.listFiles((var0x, var1x) -> var1x.toLowerCase().endsWith(".txt"));
+         if (var1 != null) {
+            for(File var5 : var1) {
+               try {
+                  BufferedReader var6 = new BufferedReader(new FileReader(var5));
+
+                  label65: {
+                     try {
+                        String var7 = var6.readLine();
+                        if (var7 == null || !var7.startsWith("Team: ")) {
+                           break label65;
+                        }
+
+                        String var8 = var7.substring(6).trim();
+                        Team var9 = new Team(var8);
+
+                        String var10;
+                        while((var10 = var6.readLine()) != null) {
+                           if (!var10.isBlank()) {
+                              String var11 = var10.trim();
+                              Pokemon var12 = findPokemonByName(var11);
+                              if (var12 != null) {
+                                 var9.members.add(var12);
+                              } else {
+                                 var9.members.add(new Pokemon(var11, "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", 0, 0, 0, 0, 0, 0));
+                              }
+                           }
+                        }
+
+                        teams.add(var9);
+                     } catch (Throwable var14) {
+                        try {
+                           var6.close();
+                        } catch (Throwable var13) {
+                           var14.addSuppressed(var13);
+                        }
+
+                        throw var14;
+                     }
+
+                     var6.close();
+                     continue;
+                  }
+
+                  var6.close();
+               } catch (IOException var15) {
+                  System.out.println("Error loading team file: " + var5.getName());
+               }
+            }
+
+         }
+      }
+   }
+
+   static void saveTeamToFile(Team var0) {
+      try {
+         File var1 = new File("teams");
+         if (!var1.exists()) {
+            var1.mkdir();
+         }
+
+         File var2 = new File(var1, sanitizeFileName(var0.name) + ".txt");
+         PrintWriter var3 = new PrintWriter(var2);
+
+         try {
+            var3.println("Team: " + var0.name);
+
+            for(Pokemon var5 : var0.members) {
+               var3.println(var5.name);
+            }
+         } catch (Throwable var7) {
+            try {
+               var3.close();
+            } catch (Throwable var6) {
+               var7.addSuppressed(var6);
+            }
+
+            throw var7;
+         }
+
+         var3.close();
+      } catch (Exception var8) {
+         System.out.println("Error saving team.");
+      }
+
+   }
+
+   static void deleteTeamFile(Team var0) {
+      File var1 = new File("teams", sanitizeFileName(var0.name) + ".txt");
+      if (var1.exists()) {
+         var1.delete();
+      }
+
+   }
+
+   static Pokemon findPokemonByName(String var0) {
+      for(Pokemon var2 : pokemonList) {
+         if (var2.name.equalsIgnoreCase(var0)) {
+            return var2;
+         }
+      }
+
+      return null;
+   }
+
+   static String sanitizeFileName(String var0) {
+      return var0.replaceAll("[^a-zA-Z0-9._-]", "_");
+   }
+
+   static String escape(String var0) {
+      return var0.replace("|", "\\|");
+   }
+
+   static String unescape(String var0) {
+      return var0.replace("\\|", "|");
+   }
+}
