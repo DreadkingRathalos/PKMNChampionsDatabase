@@ -1,0 +1,37 @@
+class Pokemon {
+   String name;
+   String type1;
+   String type2;
+   String ability;
+   String nature;
+   String item;
+   int hp;
+   int atk;
+   int def;
+   int spa;
+   int spd;
+   int spe;
+
+   public Pokemon(String var1, String var2, String var3, String var4, String var5, String var6, int var7, int var8, int var9, int var10, int var11, int var12) {
+      this.name = var1;
+      this.type1 = var2;
+      this.type2 = var3;
+      this.ability = var4;
+      this.nature = var5;
+      this.item = var6;
+      this.hp = var7;
+      this.atk = var8;
+      this.def = var9;
+      this.spa = var10;
+      this.spd = var11;
+      this.spe = var12;
+   }
+
+   public int totalEVs() {
+      return this.hp + this.atk + this.def + this.spa + this.spd + this.spe;
+   }
+
+   public String toString() {
+      return this.name + " (" + this.type1 + "/" + this.type2 + ") | Ability=" + this.ability + " | Item=" + this.item + " | Nature=" + this.nature + " | EVs: HP=" + this.hp + " ATK=" + this.atk + " DEF=" + this.def + " SPA=" + this.spa + " SPD=" + this.spd + " SPE=" + this.spe;
+   }
+}
