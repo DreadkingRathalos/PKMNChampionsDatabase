@@ -1,0 +1,10 @@
+Venusaur|Grass|Poison|Overgrowth|Modest|Venusaurite|32|0|0|32|2|0
+Garchomp|Dragon|Ground|Rough Skin|Adamant|Yache Berry|10|32|0|0|0|24
+Primarina|Water|Fairy|Liquid Voice|Modest|Mystic Water|4|0|2|32|2|26
+Incineroar|Fire|Dark|Intimidate|Bold|Leftovers|20|32|7|0|7|0
+Mimikyu|Ghost|Fairy|Disguise|Adamant|Sitrus Berry|2|32|0|0|0|32
+Sneasler|Poison|Fighting|Unburden|Adamant|Focus Sash|2|32|0|0|0|32
+Charizard|Fire|Flying|Disguise|Adamant|Sitrus Berry|2|32|0|0|0|32
+Blastoise|Water|N/A|Rain Dish|Modest|White Herb|10|0|0|24|0|32
+Lapras|Water|Ice|Water Absorb|Modest|Leftovers|10|0|0|24|0|32
+Snorlax|Normal|N/A|Immunity|Adamant|White Herb|32|32|2|0|0|0
